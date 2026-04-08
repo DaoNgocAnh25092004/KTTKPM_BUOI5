@@ -25,23 +25,8 @@ services:
       retries: 3
 
   # ────────────────────────────────────
-  # Food Service  →  port 8082
+  # Food Service  →  chạy trên máy 192.168.1.103:8082 (external)
   # ────────────────────────────────────
-  food-service:
-    build:
-      context: ./food-service
-      dockerfile: Dockerfile
-    container_name: food-service
-    restart: unless-stopped
-    ports:
-      - "8082:8082"
-    networks:
-      - food-network
-    healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:8082/foods"]
-      interval: 15s
-      timeout: 5s
-      retries: 3
 
   # ────────────────────────────────────
   # Order Service  →  port 8083
@@ -56,11 +41,10 @@ services:
     ports:
       - "8083:8083"
     environment:
-      - FOOD_SERVICE_URL=http://food-service:8082
+      - FOOD_SERVICE_URL=http://192.168.1.103:8082
       - USER_SERVICE_URL=http://user-service:8081
     depends_on:
       - user-service
-      - food-service
     networks:
       - food-network
     healthcheck:
